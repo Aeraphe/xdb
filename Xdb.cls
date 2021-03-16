@@ -115,13 +115,13 @@ Public Function insert(tb As String, data As Scripting.Dictionary)
 End Function
 
 
-Public Function select(tb As String , Optional fields As Variant) As ADODB.Recordset
+Public Function selectFrom(tb As String , Optional ByVal fields As Variant) As ADODB.Recordset
 
   Dim i As Integer
   Dim sql As String
   Dim fileds_str As String
   sql = "SELECT "
-  If (Not Optional)  Then 
+  If (Not fields)  Then 
     For i= 0 To fields.Count - 1
       fileds_str = fileds_str & fields(i) & ","
     Next 
@@ -130,6 +130,6 @@ Public Function select(tb As String , Optional fields As Variant) As ADODB.Recor
     sql = "SELECT * FROM " & tb
   End If
 
-  Set select = cn.Execute (sql)
+  Set selectFrom = cn.Execute (sql)
 
 End Function
