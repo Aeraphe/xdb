@@ -2,7 +2,7 @@ VERSION 1.0 CLASS
 BEGIN
 MultiUse = -1  'True
 END
-Attribute VB_Name = "Xbd"
+Attribute VB_Name = "Xdb"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
@@ -16,7 +16,7 @@ Attribute VB_Exposed = False
 
 '/*
 '
-'Class for Data Base Connections 
+'Class for Data Base Connections
 '@author Alberto Eduardo
 '@since 14/03/2021
 '
@@ -26,6 +26,9 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
+'Data Base Connection
+Dim cn As ADODB.Connection
+
 Dim source As String
 Dim dbFolderPath As String
 Dim dbName As String
@@ -34,13 +37,14 @@ Dim password As String
 
 '/*
 '
-'The default 
+'The default
 '
 '*/
 Private Sub class_initialize()
   source = "SQLite"
   dbName = "sql.db"
-  dbFolderPath = Application.ThisWorkbook.Path  & "\db"
+  dbFolderPath = Application.ThisWorkbook.Path & "\db"
+  Set cn = OpenConnection()
 End Sub
 
 Public Function OpenConnection() As ADODB.Connection
@@ -51,7 +55,7 @@ Public Function OpenConnection() As ADODB.Connection
   If (source = "Access" Or source = "SQLite") And Not source Like "?:\*" Then
     dbPath = dbFolderPath & "\" & dbName
   Else
-    dbPath  = source
+    dbPath = source
   End If
  
   ' Build the connection string depending on the source
@@ -73,3 +77,59 @@ Public Function OpenConnection() As ADODB.Connection
 
 End Function
 
+'/*
+'
+'Sql Insert
+'
+'@param[String] tb = Table name
+'@param[Dictionary] data = data(tab_field_name)
+'/*
+Public Function insert(tb As String, data As Scripting.Dictionary)
+
+  Dim i As Integer
+  Dim tableFileds As Variant
+  tableFileds = data.Keys
+  Dim sql As String
+  Dim sqlInit As String
+  Dim sqlValues As String
+  sqlInit = "INSERT INTO " & tb & " ("
+  sqlValues = "VALUES("
+  
+  For i = 0 To data.Count - 1
+
+    If (data.Count = 1) Then
+      sqlInit = sqlInit & tableFileds(i) & ") VALUES('" & data(tableFileds(i)) & "')"
+    Else
+      sqlInit = sqlInit & tableFileds(i) & ","
+      sqlValues = sqlValues & "'" & data(tableFileds(i)) & "',"
+    End If
+  
+  Next
+  
+  If (data.Count > 1) Then
+    sql = Left(sqlInit, Len(sqlInit) - 1)  & ") " & Left(sqlValues, Len(sqlValues) - 1)   & ")"
+  End If
+  
+  cn.Execute (sql)
+
+End Function
+
+
+Public Function select(tb As String , Optional fields As Variant) As ADODB.Recordset
+
+  Dim i As Integer
+  Dim sql As String
+  Dim fileds_str As String
+  sql = "SELECT "
+  If (Not Optional)  Then 
+    For i= 0 To fields.Count - 1
+      fileds_str = fileds_str & fields(i) & ","
+    Next 
+    sql = sql & Left(fileds_str, Len(fileds_str) - 1) & " FROM " & tb
+  Else
+    sql = "SELECT * FROM " & tb
+  End If
+
+  Set select = cn.Execute (sql)
+
+End Function
