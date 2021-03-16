@@ -84,7 +84,7 @@ End Function
 '@param[String] tb = Table name
 '@param[Dictionary] data = data(tab_field_name)
 '/*
-Public Function insert(tb As String, data As Scripting.Dictionary)
+Public Function insert(tb As String, ByVal data As Scripting.Dictionary)
 
   Dim i As Integer
   Dim tableFileds As Variant
@@ -122,12 +122,12 @@ Public Function selectFrom(tb As String , Optional ByVal fields As Variant,Optio
   Dim fileds_str As String
   sql = "SELECT "
   If (Not fields)  Then 
+    sql = "SELECT * FROM " & tb & where
+  Else
     For i= 0 To fields.Count - 1
       fileds_str = fileds_str & fields(i) & ","
     Next 
     sql = sql & Left(fileds_str, Len(fileds_str) - 1) & " FROM " & tb & where
-  Else
-    sql = "SELECT * FROM " & tb & where
   End If
 
   Set selectFrom = cn.Execute (sql)
