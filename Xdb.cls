@@ -115,7 +115,7 @@ Public Function insert(tb As String, data As Scripting.Dictionary)
 End Function
 
 
-Public Function selectFrom(tb As String , Optional ByVal fields As Variant) As ADODB.Recordset
+Public Function selectFrom(tb As String , Optional ByVal fields As Variant,Optional where As String = "" ) As ADODB.Recordset
 
   Dim i As Integer
   Dim sql As String
@@ -125,9 +125,9 @@ Public Function selectFrom(tb As String , Optional ByVal fields As Variant) As A
     For i= 0 To fields.Count - 1
       fileds_str = fileds_str & fields(i) & ","
     Next 
-    sql = sql & Left(fileds_str, Len(fileds_str) - 1) & " FROM " & tb
+    sql = sql & Left(fileds_str, Len(fileds_str) - 1) & " FROM " & tb & where
   Else
-    sql = "SELECT * FROM " & tb
+    sql = "SELECT * FROM " & tb & where
   End If
 
   Set selectFrom = cn.Execute (sql)
